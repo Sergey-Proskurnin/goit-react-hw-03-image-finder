@@ -1,13 +1,18 @@
 import React from 'react';
 
-import s from "./ImageGalleryItem.module.css";
+import s from './ImageGalleryItem.module.css';
 
-const ImageGalleryItem = () => {
-    return (
-        <li key = '1' className={s.ImageGalleryItem}>
-  <img src="" alt="" className={s.ImageGalleryItemImage} />
-</li>
-    )
-}
+const ImageGalleryItem = ({ images, onOpenModal }) => {
+  return images.map(({ id, webformatURL, user, largeImageURL }) => (
+    <li key={id} onClick={onOpenModal} className={s.ImageGalleryItem}>
+      <img
+        src={webformatURL}
+        alt={user}
+        data-source={largeImageURL}
+        className={s.ImageGalleryItemImage}
+      />
+    </li>
+  ));
+};
 
-export default ImageGalleryItem
+export default ImageGalleryItem;

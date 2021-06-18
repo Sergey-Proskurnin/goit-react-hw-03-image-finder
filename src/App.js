@@ -5,109 +5,91 @@ import Container from 'components/Container';
 import Searchbar from 'components/Searchbar';
 import ImageGallery from 'components/ImageGallery';
 import Button from 'components/Button';
-
+import Modal from 'components/Modal';
+import fetchImages from './services/fetchImages';
+import LoaderOn from 'components/Loader';
 
 class App extends Component {
   state = {
-    // todos: [],
-    // filter: '',
-    // showModal: false,
+    images: [],
+    currentPage: 1,
+    searchQuery: '',
+    isLoading: false,
+    error: null,
+    showModal: false,
+    modalImg: '',
   };
 
-  componentDidMount() {
-    // console.log('App componentDidMount');
+  onSubmit = e => {
+    e.preventDefault();
+    const { searchQuery, currentPage } = this.state;
 
-    // const todos = localStorage.getItem('todos');
-    // const parsedTodos = JSON.parse(todos);
-
-    // if (parsedTodos) {
-    //   this.setState({ todos: parsedTodos });
-    // }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    // console.log('App componentDidUpdate');
-
-    // const nextTodos = this.state.todos;
-    // const prevTodos = prevState.todos;
-
-    // if (nextTodos !== prevTodos) {
-    //   console.log('Обновилось поле todos, записываю todos в хранилище');
-    //   localStorage.setItem('todos', JSON.stringify(nextTodos));
-    // }
-
-    // if (nextTodos.length > prevTodos.length && prevTodos.length !== 0) {
-    //   this.toggleModal();
-    // }
-  }
-
-  addTodo = text => {
-    // const todo = {
-    //   id: shortid.generate(),
-    //   text,
-    //   completed: false,
-    // };
-
-    // this.setState(({ todos }) => ({
-    //   todos: [todo, ...todos],
-    // }));
-
-    // this.toggleModal();
+    this.setState({ isLoading: true });
+    fetchImages
+      .fetchImagesWithQuery(searchQuery, 1)
+      .then(response => this.setState({ images: response.data.hits }))
+      .catch(error => this.setState({ error }))
+      .finally(() => this.setState({ isLoading: false }));
   };
 
-  deleteTodo = todoId => {
-    // this.setState(({ todos }) => ({
-    //   todos: todos.filter(({ id }) => id !== todoId),
-    // }));
+  onLoadMore = () => {
+    const { searchQuery, currentPage } = this.state;
+
+    this.setState({ isLoading: true });
+    fetchImages
+      .fetchImagesWithQuery(searchQuery, currentPage + 1)
+      .then(response =>
+        this.setState(prevState => ({
+          images: [...prevState.images, ...response.data.hits],
+          currentPage: prevState.currentPage + 1,
+        })),
+      )
+      .catch(error => this.setState({ error }))
+      .finally(() => {
+        this.setState({ isLoading: false });
+        window.scrollTo({
+          top: document.querySelector('#imagesList').scrollHeight,
+          behavior: 'smooth',
+        });
+      });
+    console.log(document.querySelector('#imagesList'));
+  };
+  onOpenModal = e => {
+    this.setState({ modalImg: e.target.dataset.source, showModal: true });
   };
 
-  toggleCompleted = todoId => {
-    // this.setState(({ todos }) => ({
-    //   todos: todos.map(todo =>
-    //     todo.id === todoId ? { ...todo, completed: !todo.completed } : todo,
-    //   ),
-    // }));
+  onCloseModal = e => {
+    if (e.target.nodeName !== 'IMG') {
+      this.setState({ showModal: false, modalImg: '' });
+    }
   };
 
-  changeFilter = e => {
-    // this.setState({ filter: e.currentTarget.value });
-  };
-
-  getVisibleTodos = () => {
-    // const { filter, todos } = this.state;
-    // const normalizedFilter = filter.toLowerCase();
-
-    // return todos.filter(({ text }) =>
-    //   text.toLowerCase().includes(normalizedFilter),
-    // );
-  };
-
-  calculateCompletedTodos = () => {
-    // const { todos } = this.state;
-
-    // return todos.reduce(
-    //   (total, todo) => (todo.completed ? total + 1 : total),
-    //   0,
-    // );
-  };
-
-  toggleModal = () => {
-    // this.setState(({ showModal }) => ({
-    //   showModal: !showModal,
-    // }));
+  onSetQuery = e => {
+    this.setState({ [e.target.name]: e.target.value });
   };
 
   render() {
-    // const { todos, filter, showModal } = this.state;
-    // const totalTodoCount = todos.length;
-    // const completedTodoCount = this.calculateCompletedTodos();
-    // const visibleTodos = this.getVisibleTodos();
-
     return (
       <Container>
-       <Searchbar/>
-       <ImageGallery/>
-       <Button/>
+        <Searchbar
+          onSubmit={this.onSubmit}
+          onSetQuery={this.onSetQuery}
+          searchQuery={this.state.searchQuery}
+        />
+        <ImageGallery
+          onOpenModal={this.onOpenModal}
+          images={this.state.images}
+        />
+        {this.state.isLoading && <LoaderOn />}
+        {this.state.images.length !== 0 && (
+          <Button onLoadMore={this.onLoadMore} />
+        )}
+        {this.state.showModal && (
+          <Modal
+            onCloseModal={this.onCloseModal}
+            modalImg={this.state.modalImg}
+          />
+        )}
       </Container>
     );
   }

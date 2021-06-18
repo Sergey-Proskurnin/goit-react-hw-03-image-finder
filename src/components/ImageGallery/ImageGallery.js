@@ -1,14 +1,14 @@
 import React from 'react';
 
-import s from "./ImageGallery.module.css";
+import s from './ImageGallery.module.css';
 import ImageGalleryItem from 'components/ImageGalleryItem';
 
-const ImageGallery = () => {
-    return (
-        <ul className={s.ImageGallery}>
-  <ImageGalleryItem/>
-</ul>
-    )
-} 
+const ImageGallery = ({ images, onOpenModal }) => {
+  return (
+    <ul className={s.ImageGallery} id="imagesList">
+      <ImageGalleryItem onOpenModal={onOpenModal} images={images} />
+    </ul>
+  );
+};
 
-export default ImageGallery
+export default ImageGallery;

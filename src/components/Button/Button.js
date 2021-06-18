@@ -2,9 +2,9 @@ import React from 'react';
 
 import s from './Button.module.css';
 
-const Button = () => {
+const Button = ({ onLoadMore }) => {
   return (
-    <button className={s.Button} type="button">
+    <button onClick={onLoadMore} className={s.Button} type="button">
       Load more
     </button>
   );
