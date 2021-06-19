@@ -1,18 +1,28 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import s from './ImageGalleryItem.module.css';
+import contextProps from 'context/context';
 
-const ImageGalleryItem = ({ images, onOpenModal }) => {
-  return images.map(({ id, webformatURL, user, largeImageURL }) => (
-    <li key={id} onClick={onOpenModal} className={s.ImageGalleryItem}>
-      <img
-        src={webformatURL}
-        alt={user}
-        data-source={largeImageURL}
-        className={s.ImageGalleryItemImage}
-      />
-    </li>
-  ));
+const ImageGalleryItem = () => {
+  return (
+    <contextProps.Consumer>
+      {({ images, onOpenModal }) => {
+        return images.map(({ id, webformatURL, tags, largeImageURL }) => (
+          <li key={id} onClick={onOpenModal} className={s.ImageGalleryItem}>
+            <img
+              src={webformatURL}
+              alt={tags}
+              data-source={largeImageURL}
+              className={s.ImageGalleryItemImage}
+            />
+          </li>
+        ));
+      }}
+    </contextProps.Consumer>
+  );
 };
-
+ImageGalleryItem.propTypes = {
+  onOpenModal: PropTypes.func
+};
 export default ImageGalleryItem;

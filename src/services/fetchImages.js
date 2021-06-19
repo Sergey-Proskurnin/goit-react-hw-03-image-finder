@@ -1,4 +1,3 @@
-import React from 'react';
 import axios from 'axios';
 
 const API_KEY = '21195458-19b2d8fc62244b43de198b4d0';
@@ -16,4 +15,4 @@ const fetchImagesWithQuery = (searchParam, page) => {
   return axios.get(`${BASE_URL}?${searchParams}`);
 };
 
-export default { fetchImagesWithQuery };
+export { fetchImagesWithQuery };

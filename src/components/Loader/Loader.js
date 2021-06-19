@@ -1,15 +1,13 @@
 import React from 'react';
 import Loader from 'react-loader-spinner';
 
+import s from './Loader.module.css';
+
 const LoaderOn = () => {
   return (
-    <Loader
-      type="Audio"
-      color="#00BFFF"
-      height={80}
-      width={80}
-      timeout={3000}
-    />
+    <div className={s.Loader}>
+      <Loader type="Audio" color="#00BFFF" height={150} width={150} />
+    </div>
   );
 };
 
