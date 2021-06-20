@@ -22,7 +22,9 @@ body {
 }
 
 body.is-open {
-  overflow: hidden;
+  overflow: auto;
+  width: 100vw;
+  height: 100vh;
 }
 
 img {
